@@ -1,0 +1,916 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "mount_file_id": "1T1KLCcZM-soeJAO7RQilIa7dZTJisOZN",
+      "authorship_tag": "ABX9TyMvPMlaQtyqnvCH9W3M0I6Q",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/JumanaRahim/workshop/blob/master/assn-2\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "I9E6BgII_Ecg",
+        "outputId": "3ce73675-45e4-4606-b177-9bacb1a2ebba"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "unzip:  cannot find or open /content/drive/MyDrive/ass, /content/drive/MyDrive/ass.zip or /content/drive/MyDrive/ass.ZIP.\n"
+          ]
+        }
+      ],
+      "source": [
+        "!unzip /content/drive/MyDrive/ass 2/Tes=t-20221125T074530Z-001.zip"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v--tjqHJ_G6E",
+        "outputId": "067d02f4-1c8a-4d37-9cdb-c6874a2f1300"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount(\"/content/drive\", force_remount=True).\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import tensorflow as tf\n",
+        "import matplotlib.pyplot as plt\n",
+        "import cv2"
+      ],
+      "metadata": {
+        "id": "dOlhhNrEAtf8"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from keras.preprocessing.image import ImageDataGenerator\n",
+        "from tensorflow.keras.utils import to_categorical"
+      ],
+      "metadata": {
+        "id": "kN0a7eBAAvdN"
+      },
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "train_datagen = ImageDataGenerator(\n",
+        "        rescale=1./255,\n",
+        "        shear_range=0.2,\n",
+        "        zoom_range=0.2,\n",
+        "        horizontal_flip=True)\n",
+        "train_generator = train_datagen.flow_from_directory(\n",
+        "        '/content/drive/MyDrive/ass 2/Trai=n-20221125T074530Z-001',\n",
+        "        target_size=(64, 64),\n",
+        "        batch_size=32,\n",
+        "        class_mode='binary')"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Z__2uIrkAzUV",
+        "outputId": "6421299d-e5d0-4562-c22b-647d4324f0f0"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 1088 images belonging to 1 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "test_datagen = ImageDataGenerator(rescale=1./255)\n",
+        "validation_generator = test_datagen.flow_from_directory(\n",
+        "        '/content/drive/MyDrive/ass 2/Tes=t-20221125T074530Z-001',\n",
+        "        target_size=(64,64),\n",
+        "        batch_size=32,\n",
+        "        class_mode='binary',shuffle=False)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "sj7uWDBQBC11",
+        "outputId": "1c6f96ec-9117-499a-bc54-f5f986a94996"
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 109 images belonging to 1 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "im=plt.imread(\"/content/drive/MyDrive/ass 2/Trai=n-20221125T074530Z-001/Trai=n/neg100.jpg\")"
+      ],
+      "metadata": {
+        "id": "cEBMVxskBIX3"
+      },
+      "execution_count": 7,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "plt.imshow(im)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 284
+        },
+        "id": "KD8WZsA4BWmq",
+        "outputId": "2ff39b1b-f90b-4b35-df61-508994c3bf57"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<matplotlib.image.AxesImage at 0x7fa30ca7fdd0>"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 8
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 432x288 with 1 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Add the image to a batch\n",
+        "from keras.preprocessing import image\n",
+        "from tensorflow.keras import layers\n",
+        "im=tf.keras.preprocessing.image_dataset_from_directory(\"/content/drive/MyDrive/ass 2/Tes=t-20221125T074530Z-001\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "YvxScQv8BkGE",
+        "outputId": "9ec986b7-90ea-4fb1-fe58-2fea1f37e83d"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 109 files belonging to 1 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os"
+      ],
+      "metadata": {
+        "id": "g_3fMNUXB4KK"
+      },
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import glob\n",
+        "i=0\n",
+        "for img in glob.glob(\"//content/drive/MyDrive/ass 2/Tes=t-20221125T074530Z-001/Tes=t/neg0.jpg\"):\n",
+        "  i=i+1\n",
+        "\n",
+        "  n= cv2.imread(img)\n",
+        "  im=n[20:350, 200:500, :]\n",
+        " "
+      ],
+      "metadata": {
+        "id": "SlqwV9jCCUVQ"
+      },
+      "execution_count": 13,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Add the image to a batch\n",
+        "from keras.preprocessing import image\n",
+        "from tensorflow.keras import layers\n",
+        "im=tf.keras.preprocessing.image_dataset_from_directory(\"/content/drive/MyDrive/ass 2/Tes=t-20221125T074530Z-001\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "wrYGnpEGCwQi",
+        "outputId": "bee8b707-166b-4ad3-8989-d7d8f9e077d0"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 109 files belonging to 1 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_augmentation = tf.keras.Sequential([\n",
+        "  layers.RandomFlip(\"horizontal_and_vertical\"),\n",
+        "  layers.RandomRotation(0.2),\n",
+        "])\n",
+        "\n",
+        "# Add the image to a batch.\n",
+        "image = tf.cast(tf.expand_dims(n, 0), tf.float32)\n",
+        "\n",
+        "plt.figure(figsize=(10, 10))\n",
+        "for i in range(9):\n",
+        "  augmented_image = data_augmentation(image)\n",
+        "  ax = plt.subplot(3, 3, i + 1)\n",
+        "  plt.imshow(augmented_image[0])\n",
+        "  plt.axis(\"off\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 731
+        },
+        "id": "E8jWmTPdC_7e",
+        "outputId": "9fdafde6-c02a-4742-d9cf-3a30d53bc64d"
+      },
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 720x720 with 9 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "im=tf.keras.preprocessing.image_dataset_from_directory(\"/content/drive/MyDrive/ass 2/Trai=n-20221125T074530Z-001\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "97MY8yEUDcbx",
+        "outputId": "ed4748b2-0bbf-4d37-c013-5de067f6a4c9"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 1726 files belonging to 1 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_augmentation = tf.keras.Sequential([\n",
+        "  layers.RandomFlip(\"horizontal_and_vertical\"),\n",
+        "  layers.RandomRotation(0.2),\n",
+        "])\n",
+        "\n",
+        "# Add the image to a batch.\n",
+        "image = tf.cast(tf.expand_dims(n, 0), tf.float32)\n",
+        "\n",
+        "plt.figure(figsize=(10, 10))\n",
+        "for i in range(9):\n",
+        "  augmented_image = data_augmentation(image)\n",
+        "  ax = plt.subplot(3, 3, i + 1)\n",
+        "  plt.imshow(augmented_image[0])\n",
+        "  plt.axis(\"off\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 731
+        },
+        "id": "8sXUqhLMDioL",
+        "outputId": "fcd9023c-1d33-4b4e-a4e0-25324b8d4d98"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "WARNING:matplotlib.image:Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<Figure size 720x720 with 9 Axes>"
+            ],
+            "image/png": "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\n"
+          },
+          "metadata": {
+            "needs_background": "light"
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from keras.layers import Input, Lambda, Dense, Flatten\n",
+        "from keras.models import Model\n",
+        "from keras.applications.vgg16 import VGG16\n",
+        "from keras.applications.vgg16 import preprocess_input\n",
+        "from keras.preprocessing import image\n",
+        "from keras.preprocessing.image import ImageDataGenerator\n",
+        "from keras.models import Sequential\n",
+        "import numpy as np\n",
+        "from glob import glob\n",
+        "import matplotlib.pyplot as pl"
+      ],
+      "metadata": {
+        "id": "8aIuTsQoD7hP"
+      },
+      "execution_count": 20,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "image_size = [224,224]"
+      ],
+      "metadata": {
+        "id": "ak2RoHBXENbp"
+      },
+      "execution_count": 21,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "train_path = '/content/drive/MyDrive/ass 2/Trai=n-20221125T074530Z-001'\n",
+        "valid_path = '/content/drive/MyDrive/ass 2/Tes=t-20221125T074530Z-001'"
+      ],
+      "metadata": {
+        "id": "zXb1slIRERTU"
+      },
+      "execution_count": 22,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from keras.preprocessing.image import ImageDataGenerator\n",
+        "\n",
+        "train_datagen = ImageDataGenerator(rescale = 1./255,\n",
+        "                                   shear_range = 0.2,\n",
+        "                                   zoom_range = 0.2,\n",
+        "                                   horizontal_flip = True)"
+      ],
+      "metadata": {
+        "id": "T_lFsgtdExUW"
+      },
+      "execution_count": 23,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "test_datagen = ImageDataGenerator(rescale = 1./255)\n",
+        "\n",
+        "training_set = train_datagen.flow_from_directory('/content/drive/MyDrive/ass 2/Trai=n-20221125T074530Z-001',\n",
+        "                                                 target_size = (224, 224),\n",
+        "                                                 batch_size = 32,\n",
+        "                                                 class_mode = 'binary')\n",
+        "\n",
+        "test_set = test_datagen.flow_from_directory('/content/drive/MyDrive/ass 2/Tes=t-20221125T074530Z-001',\n",
+        "                                            target_size = (224, 224),\n",
+        "                                            batch_size = 32,\n",
+        "                                            class_mode = 'binary')"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "oSf3InT8E1ed",
+        "outputId": "0c6027f7-c3a1-46fd-e5e4-d0c8efb853eb"
+      },
+      "execution_count": 24,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 2427 images belonging to 1 classes.\n",
+            "Found 109 images belonging to 1 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "vgg = VGG16(input_shape=image_size + [3], weights='imagenet', include_top=False)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "BXsnGI4qFGD9",
+        "outputId": "98fb662b-98e4-4c91-b72d-282167e356ce"
+      },
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/vgg16/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5\n",
+            "58889256/58889256 [==============================] - 0s 0us/step\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        " # don't train existing weights\n",
+        "for layer in vgg.layers:\n",
+        "  layer.trainable = False"
+      ],
+      "metadata": {
+        "id": "EBYk1aF2FPO7"
+      },
+      "execution_count": 26,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# useful for getting number of classes\n",
+        "folders = glob(\"/content/drive/MyDrive/ass 2/Trai=n-20221125T074530Z-001\")\n",
+        "print(len(folders))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "S7v0wNlMFWyP",
+        "outputId": "8cc081fc-9c0c-4954-8bd0-4d1f81d47193"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "vgg.input"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "1vQFq408Fco8",
+        "outputId": "860fc261-c70f-4d7a-bb33-2ed7d68951ff"
+      },
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<KerasTensor: shape=(None, 224, 224, 3) dtype=float32 (created by layer 'input_1')>"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 28
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "for layer in vgg.layers:\n",
+        "  layer.trainable = False"
+      ],
+      "metadata": {
+        "id": "TGX6Ef0pFq1u"
+      },
+      "execution_count": 29,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "x = Flatten()(vgg.output)\n",
+        "# x = Dense(1000, activation='relu')(x)\n",
+        "prediction = Dense(1, activation='sigmoid')(x)"
+      ],
+      "metadata": {
+        "id": "37GaIPk_FukU"
+      },
+      "execution_count": 30,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# create a model object\n",
+        "model = Model(inputs=vgg.input, outputs=prediction)"
+      ],
+      "metadata": {
+        "id": "u88uD_ZnF026"
+      },
+      "execution_count": 31,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# view the structure of the model\n",
+        "model.summary()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ulFgPSJ9F5OY",
+        "outputId": "69f4d78e-a6d0-4b27-caea-3c08fa077862"
+      },
+      "execution_count": 32,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model: \"model\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " input_1 (InputLayer)        [(None, 224, 224, 3)]     0         \n",
+            "                                                                 \n",
+            " block1_conv1 (Conv2D)       (None, 224, 224, 64)      1792      \n",
+            "                                                                 \n",
+            " block1_conv2 (Conv2D)       (None, 224, 224, 64)      36928     \n",
+            "                                                                 \n",
+            " block1_pool (MaxPooling2D)  (None, 112, 112, 64)      0         \n",
+            "                                                                 \n",
+            " block2_conv1 (Conv2D)       (None, 112, 112, 128)     73856     \n",
+            "                                                                 \n",
+            " block2_conv2 (Conv2D)       (None, 112, 112, 128)     147584    \n",
+            "                                                                 \n",
+            " block2_pool (MaxPooling2D)  (None, 56, 56, 128)       0         \n",
+            "                                                                 \n",
+            " block3_conv1 (Conv2D)       (None, 56, 56, 256)       295168    \n",
+            "                                                                 \n",
+            " block3_conv2 (Conv2D)       (None, 56, 56, 256)       590080    \n",
+            "                                                                 \n",
+            " block3_conv3 (Conv2D)       (None, 56, 56, 256)       590080    \n",
+            "                                                                 \n",
+            " block3_pool (MaxPooling2D)  (None, 28, 28, 256)       0         \n",
+            "                                                                 \n",
+            " block4_conv1 (Conv2D)       (None, 28, 28, 512)       1180160   \n",
+            "                                                                 \n",
+            " block4_conv2 (Conv2D)       (None, 28, 28, 512)       2359808   \n",
+            "                                                                 \n",
+            " block4_conv3 (Conv2D)       (None, 28, 28, 512)       2359808   \n",
+            "                                                                 \n",
+            " block4_pool (MaxPooling2D)  (None, 14, 14, 512)       0         \n",
+            "                                                                 \n",
+            " block5_conv1 (Conv2D)       (None, 14, 14, 512)       2359808   \n",
+            "                                                                 \n",
+            " block5_conv2 (Conv2D)       (None, 14, 14, 512)       2359808   \n",
+            "                                                                 \n",
+            " block5_conv3 (Conv2D)       (None, 14, 14, 512)       2359808   \n",
+            "                                                                 \n",
+            " block5_pool (MaxPooling2D)  (None, 7, 7, 512)         0         \n",
+            "                                                                 \n",
+            " flatten (Flatten)           (None, 25088)             0         \n",
+            "                                                                 \n",
+            " dense (Dense)               (None, 1)                 25089     \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 14,739,777\n",
+            "Trainable params: 25,089\n",
+            "Non-trainable params: 14,714,688\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# tell the model what cost and optimization method to use\n",
+        "model.compile(\n",
+        "  loss='binary_crossentropy',\n",
+        "  optimizer='adam',\n",
+        "  metrics=['accuracy'])"
+      ],
+      "metadata": {
+        "id": "Cna5EAePGBpO"
+      },
+      "execution_count": 33,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "history=model.fit(x=training_set,validation_data=test_set,epochs=20)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "E2lgg61vGGom",
+        "outputId": "3dc47520-4b53-4263-971d-fa1ae84e06f4"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 1/20\n",
+            "76/76 [==============================] - 1214s 16s/step - loss: 7.4835e-07 - accuracy: 1.0000 - val_loss: 6.0439e-08 - val_accuracy: 1.0000\n",
+            "Epoch 2/20\n",
+            "76/76 [==============================] - 1181s 16s/step - loss: 3.8727e-08 - accuracy: 1.0000 - val_loss: 6.0194e-08 - val_accuracy: 1.0000\n",
+            "Epoch 3/20\n",
+            "76/76 [==============================] - 1173s 15s/step - loss: 3.8491e-08 - accuracy: 1.0000 - val_loss: 6.0179e-08 - val_accuracy: 1.0000\n",
+            "Epoch 4/20\n",
+            "76/76 [==============================] - 1166s 15s/step - loss: 3.7737e-08 - accuracy: 1.0000 - val_loss: 6.0161e-08 - val_accuracy: 1.0000\n",
+            "Epoch 5/20\n",
+            "76/76 [==============================] - 1159s 15s/step - loss: 3.8413e-08 - accuracy: 1.0000 - val_loss: 6.0141e-08 - val_accuracy: 1.0000\n",
+            "Epoch 6/20\n",
+            "76/76 [==============================] - 1156s 15s/step - loss: 3.8621e-08 - accuracy: 1.0000 - val_loss: 6.0119e-08 - val_accuracy: 1.0000\n",
+            "Epoch 7/20\n",
+            "42/76 [===============>..............] - ETA: 8:14 - loss: 3.7468e-08 - accuracy: 1.0000"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# accuracy\n",
+        "from matplotlib import pyplot as plt\n",
+        "\n",
+        "plt.plot(history.history['accuracy'])\n",
+        "plt.plot(history.history['val_accuracy'])\n",
+        "plt.title('model accuracy')\n",
+        "plt.ylabel('accuracy')\n",
+        "plt.xlabel('epoch')\n",
+        "plt.legend(['train', 'val'], loc='upper left')\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "gePvtmxvIxO1"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# loss\n",
+        "from matplotlib import pyplot as plt\n",
+        "\n",
+        "plt.plot(history.history['loss'])\n",
+        "plt.plot(history.history['val_loss'])\n",
+        "plt.title('model loss')\n",
+        "plt.ylabel('loss')\n",
+        "plt.xlabel('epoch')\n",
+        "plt.legend(['train', 'val'], loc='upper left')\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "Ke1vLURrI2U9"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "test_datagen = ImageDataGenerator(rescale=1./255)\n",
+        "validation_generator = test_datagen.flow_from_directory(\n",
+        "        '/content/drive/MyDrive/drowsiness_cropped (1)/drowsiness_cropped/test',\n",
+        "        target_size=(224,224),\n",
+        "        batch_size=32,\n",
+        "        class_mode='binary',shuffle=False)"
+      ],
+      "metadata": {
+        "id": "VcPebb3UI8nh"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Y_pred=model.predict_generator(validation_generator)"
+      ],
+      "metadata": {
+        "id": "4OpOtHzrI9g-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "validation_generator.classes"
+      ],
+      "metadata": {
+        "id": "gUrB4HZJJVHn"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay\n",
+        "y_pred = Y_pred >0.95\n",
+        "y_pred"
+      ],
+      "metadata": {
+        "id": "mob-UO1EJVxT"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import classification_report\n",
+        "print(confusion_matrix(validation_generator.classes, y_pred))\n",
+        "print('Confusion Matrix')"
+      ],
+      "metadata": {
+        "id": "H6dABgl5Ji-6"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay\n",
+        "cm= confusion_matrix(validation_generator.classes, y_pred)"
+      ],
+      "metadata": {
+        "id": "-i3UyI0RJlty"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "disp = ConfusionMatrixDisplay(confusion_matrix=cm,display_labels=target_names)\n",
+        "disp.plot()\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "b9-_6rcVJoWV"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print('Classification Report')\n",
+        "target_names = ['no_yawn','yawn']\n",
+        "print(classification_report(validation_generator.classes, y_pred, target_names=target_names))"
+      ],
+      "metadata": {
+        "id": "ICFmvyGGJubr"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
